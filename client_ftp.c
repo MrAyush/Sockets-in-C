@@ -3,6 +3,7 @@
 #include<sys/types.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
+#include<fcntl.h>
 #include<unistd.h>
 #include<stdlib.h>
 #include<string.h>
@@ -14,6 +15,7 @@ int main(int argc, char **argv) {
 	int ret;
 	char servip[32];
 	int servport;
+	char *file = "server_out.txt";
 	struct sockaddr_in servaddr, cli, ser;
 	len = sizeof(struct sockaddr_in);
 
@@ -40,13 +42,16 @@ int main(int argc, char **argv) {
     n = read(sockfd, size, 1024);
     size[n] = '\0';
     printf("Size- %s\n", size);
+    int fd = open(file, O_CREAT | O_WRONLY);
 	while (1) {
 		char recvline[1024];
         if (n == 0) {
+        	close(fd);
             break;
         }
 		n = read(sockfd, recvline, 1024);
 		recvline[n] = '\0';
+		write(fd, recvline, n);
 		printf("%s", recvline);
 	}
 	exit(0);
